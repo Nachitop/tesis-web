@@ -1,0 +1,228 @@
+
+    <h4 mat-dialog-title><strong> {{data.title}}</strong></h4>
+    
+        <mat-dialog-content>
+          <p *ngIf="data.content; else problemaConte;">{{data.content}}</p>
+          <ng-template #problemaConte>
+              <!-- <h5>Datos generales</h5>
+              <br> -->
+           <div class="row">
+              
+             <div class="col-md-6">
+               <div class="">
+                 <div class="row">
+                  
+                   <div class="col-md-4">
+                      
+                     
+                      <label>Titulo:</label>
+                   </div>
+                   <div class="col-md-8">
+                      <p>{{problema.titulo}}</p>
+                    </div>
+                 </div>
+               
+                 <div class="row">
+                   <div class="col-md-4">
+                      <label>Descripción: </label>
+                   </div>
+                   <div class="col-md-8">
+                      <p>{{problema.descripcion}}</p>
+                    </div>
+                 </div>
+
+                 <div class="row">
+                    <div class="col-md-4">
+                       <label>Usuario: </label>
+                    </div>
+                    <div class="col-md-8">
+                       <p *ngIf="problema.anonimo">Anónimo</p>
+                       <p *ngIf="!problema.anonimo">{{problema.usuario.nombre}} {{problema.usuario.apellido}}</p>
+                     </div>
+                  </div>
+               
+                  <div class="row">
+                      <div class="col-md-4">
+                         <label>Fecha: </label>
+                      </div>
+                      <div class="col-md-8">
+                         <p>{{problema.fecha | date: 'dd/MM/yyyy'}}</p>
+                       </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                           <label>Status: </label>
+                        </div>
+                        <div class="col-md-8">
+                          <p>{{problema.status}}</p>
+                         </div>
+                      </div>
+
+                      <div class="row">
+                          <div class="col-md-4">
+                             <label>Votos: </label>
+                          </div>
+                          <div class="col-md-8">
+                            <p>{{problema.votos.length}}</p>
+                           </div>
+                        </div>
+
+
+                      <br>
+                     
+                 
+               </div>
+            
+
+             </div>
+             <div class="col-md-6">
+               <div class="align-items-center">
+                  <img [src]="conexion.getServer()+'/'+problema.imagen" style="width:300px; height:300px;">
+               </div>
+                
+             </div>
+        
+           </div>
+<br>
+           <div class="row">
+              <div class="col-md-6">
+                <div class="">
+                   <h5>Etiquetas</h5>
+                   <br>
+                   <div class="row">
+                    
+                       <div class="col-md-4">
+                          <label>Facultad: </label>
+                       </div>
+                       <div class="col-md-8">
+                         <p>{{problema.etiquetas.facultad.nombre}}</p>
+                        </div>
+                     </div>
+ 
+                     <div class="row">
+                    
+                         <div class="col-md-4">
+                            <label>Tipo de problema: </label>
+                         </div>
+                         <div class="col-md-8">
+                           <p>{{problema.etiquetas.tipo_problema.nombre}}</p>
+                          </div>
+                       </div>
+ 
+                       
+                     <div class="row">
+                    
+                         <div class="col-md-4">
+                            <label>Área: </label>
+                         </div>
+                         <div class="col-md-8">
+                           <p>{{problema.etiquetas.area.nombre}}</p>
+                          </div>
+                       </div>
+ 
+                       
+                     <div class="row">
+                    
+                         <div class="col-md-4">
+                            <label>Personalizada: </label>
+                         </div>
+                         <div class="col-md-8">
+                           <p>{{problema.etiquetas.personalizada}}</p>
+                          </div>
+                       </div>
+                </div>
+                
+         
+    
+              </div>
+              <div class="col-md-6">
+               <div class="">
+                  <div class="row" *ngIf="problema.status=='Pendiente'">
+                 
+                     <div class="col-md-6">
+                        <br>
+                        <br>
+                        <button mat-raised-button style="color:#7DDE00" (click)="mostrarDialog2('habilitar');"><i class="material-icons">done</i> Habilitar</button>
+                     </div>
+                     <div class="col-md-6">
+                           <br>
+                           <br>
+                        <button mat-raised-button style="color:#E1421B"(click)="mostrarDialog2('eliminar');" ><i class="material-icons">delete</i> Eliminar</button>
+                     </div>
+                  </div>
+                  <br>
+                  <div class="row" *ngIf="problema.status=='En proceso'">
+                  <form [formGroup]="formSolucion" class="full-width">
+                     <mat-form-field class="full-width">
+                        <textarea matInput placeholder="Describe la solución aquí" [formControl]="controlNota"  ></textarea>
+                        <mat-error *ngIf="controlNota.hasError('required')"><strong>Nota</strong> es requerido</mat-error>
+                        <mat-hint align="end">{{formSolucion.get('nota').value.length}} / 200</mat-hint>
+                     </mat-form-field>
+                     <br>
+                     <mat-form-field class="full-width" >
+                        <span matPrefix><i class="material-icons">attach_money</i>&nbsp;</span>
+                        <input matInput placeholder="monto" type="number"  [formControl]="controlMonto" >
+                        <mat-error *ngIf="controlMonto.hasError('required')"><strong>Monto</strong> es requerido</mat-error>
+                        <mat-error *ngIf="controlMonto.hasError('min')">El monto debe de ser igual o mayor a cero</mat-error>
+                     </mat-form-field>
+                     <br>
+                     <mat-form-field class="full-width"  >
+                        <input matInput [matDatepicker]="picker" placeholder="Seleccione una fecha" [formControl]="controlFecha" >
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                        <mat-error *ngIf="controlFecha.hasError('required')"><strong>Fecha</strong> es requerido</mat-error>
+                     </mat-form-field>
+                     <br>
+                     <br>
+                     <button class="full-width" mat-stroked-button style="color:#7DDE00;" [disabled]="!formSolucion.valid" (click)="solucionarProblema();">Solucionar</button>
+                  </form>
+                  </div>
+
+                  <div class="row" *ngIf="problema.status=='Solucionado'">
+                     <div>
+                        <div class="row">
+                              <div class="col-md-4">
+                                    <label>Nota:</label>
+                                 </div>
+                                 <div class="col-md-8">
+                                   <p>{{problema.solucion.nota}}</p>
+                                    </div>
+                        </div>
+                        <div class="row">
+                              <div class="col-md-4">
+                                 <label>Monto:</label>
+                              </div>
+                              <div class="col-md-8">
+                                 <label>${{problema.solucion.monto}}</label>
+                              </div>
+
+                        </div>
+
+                        <div class="row">
+                              <div class="col-md-4">
+                                 <label>Fecha:</label>
+                              </div>
+                              <div class="col-md-8">
+                                 <label>{{problema.solucion.fecha | date:'dd/MM/yyyy'}}</label>
+                              </div>
+
+                        </div>
+                         
+                     </div>
+                    
+                  </div>
+               </div>
+              </div>
+            </div>
+          </ng-template>
+        </mat-dialog-content>
+    
+     
+   <br>
+    <mat-dialog-actions style="float:right;">
+        <!-- mat-dialog-close -->
+        <button mat-button color="warn" (click)="onClose();" >No</button>
+        <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
+        <button mat-button color="primary" (click)="onClose();" cdkFocusInitial>Ok</button>
+      </mat-dialog-actions>
+

@@ -1,0 +1,30 @@
+<div class="margin-all">
+    <h2 class="alinear-texto margin-component">Trying to Engage Some ISSues</h2>
+    <div class="container h-100">  
+      <div class="row h-100 justify-content-center align-items-center">
+          <br>
+          <img style="width:250px; height:250px;" src="assets/imgs/UAS.png" >
+        <form class="col-12" [formGroup]="loginForm">
+          <mat-form-field style="width: 100%;" >
+            <input matInput placeholder="Matrícula" [formControl]="matriculaFormControl">
+            <mat-error *ngIf="matriculaFormControl.hasError('pattern') && !matriculaFormControl.hasError('required')">
+              Ingresa una matrícula válida
+            </mat-error>
+            <mat-error *ngIf="matriculaFormControl.hasError('required')">
+              Matrícula es <strong>requerida</strong>
+            </mat-error>
+          </mat-form-field>
+          <br>
+          <br>
+          <mat-form-field style="width: 100%;" >
+            <input type="password" matInput placeholder="Contraseña" [formControl]="passwordFormControl">
+            <mat-error *ngIf="passwordFormControl.hasError('pattern') && !passwordFormControl.hasError('required')">Ingrese una contraseña válida</mat-error>
+            <mat-error *ngIf="passwordFormControl.hasError('required')">Contraseña es <strong>requerida</strong></mat-error>
+          </mat-form-field>
+          <br>
+          <br>
+          <button style="width: 100%;" mat-raised-button color="primary" [disabled]="loginForm.invalid" (click)="ingresar();">Ingresar</button>
+        </form> 
+      </div>
+    </div>
+</div>

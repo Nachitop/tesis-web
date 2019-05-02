@@ -1,0 +1,26 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+
+html,body{
+    height: 100%;
+}
+body{
+    margin: 0;
+}
+.margin-right{
+    margin-right: 5px;
+    
+}
+
+
+.margin-component{
+    margin-top: 25px;
+}
+
+.alinear-texto{
+    text-align: center;
+}
+
+.margin-all{
+    margin: 25px 25px 25px 25px;
+}
