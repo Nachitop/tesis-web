@@ -7,7 +7,7 @@ const ProblemaSchema= new Schema({
     usuario:{type: Schema.Types.ObjectId, ref:'Usuario',required:true},
     imagen:{type:String,required:true},
     anonimo:{type:Boolean,required:true},
-    fecha:{type:String,required:true},
+    fecha:{type:Date,required:true},
     status:{type:String,required:true},
     etiquetas:{
         

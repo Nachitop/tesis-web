@@ -17,11 +17,13 @@ import {HttpClientModule} from '@angular/common/http';
 import { DialogComponent } from './components/dialog/dialog.component';
 import { EliminarDialogComponent } from './components/eliminar-dialog/eliminar-dialog.component';
 import { NotificacionComponent } from './components/notificacion/notificacion.component';
+import { EstadisticasComponent } from './components/estadisticas/estadisticas.component';
 
 const routes:Routes=[
   //{path:'',component:MainNavComponent},
   {path:'problemas',component:ProblemasComponent},
-  {path:'notificaciones', component:NotificacionComponent}
+  {path:'notificaciones', component:NotificacionComponent},
+  {path:'estadisticas', component:EstadisticasComponent}
   //{path:'problemas/solucionados',component:ProblemasSolucionadosComponent},
   //{path:'login',component:LoginComponent}
 ];
@@ -34,7 +36,8 @@ const routes:Routes=[
     LoginComponent,
     DialogComponent,
     EliminarDialogComponent,
-    NotificacionComponent
+    NotificacionComponent,
+    EstadisticasComponent
   ],
   imports: [
     BrowserModule,RouterModule.forRoot(routes),BrowserAnimationsModule,Material, LayoutModule, MatToolbarModule, MatButtonModule, MatSidenavModule, MatIconModule, MatListModule,FlexLayoutModule,FormsModule,ReactiveFormsModule, HttpClientModule

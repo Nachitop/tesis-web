@@ -30,4 +30,8 @@ export class ProblemaService {
     return this.http.post(this.conexion.getServer()+this.url_api+"/solucionar",problema);
   }
 
+  getEstadisticas(facultad:string, fecha_desde:string, fecha_hasta:string){
+    return this.http.get(this.conexion.getServer()+this.url_api+"/estadisticas/"+facultad+"/"+fecha_desde+"/"+fecha_hasta)
+  }
+
 }

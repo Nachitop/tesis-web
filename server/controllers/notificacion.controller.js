@@ -8,13 +8,14 @@ var Apriori = require('apriori');
 var carpeta="csvFiles/"; 
 const util= require('util');
 const unlinkasync= util.promisify(fs.unlink);
-
+const hoy=new Date().toLocaleDateString();
 
 notificacionCtrl.get=async(req,res)=>{
     try {
 
         const {facultad}= req.params;
-        const fechaHoy=new Date().toDateString();
+
+        //const fechaHoy=new Date().toDateString();
  
         var problemas=[];
         const options={};
@@ -43,19 +44,26 @@ notificacionCtrl.get=async(req,res)=>{
 
 
         if(facultad==='all'){
-             problemas= await Problema.find({fecha: fechaHoy}, options).populate(population['population1']).populate(population['population2']).populate(population['population3']);
+             problemas= await Problema.find({fecha: new Date(hoy), status:{$ne:'Solucionado'} } , options).populate(population['population1']).populate(population['population2']).populate(population['population3']);
              correrAlgoritmo(problemas,facultad);
 
         }else{
+            //console.log(new Date(hoy));
             const fac= await Facultad.findOne({nombre:facultad});
-            problemas = await Problema.find({'etiquetas.facultad':fac._id, fecha: fechaHoy },options).populate(population['population1']).populate(population['population2']).populate(population['population3']);
+            problemas = await Problema.find({'etiquetas.facultad':fac._id, fecha: new Date(hoy), status:{$ne:'Solucionado'} },options).populate(population['population1']).populate(population['population2']).populate(population['population3']);
             correrAlgoritmo(problemas,fac.nombre);
         }
 
 
         function correrAlgoritmo(problemas,facultad){
-              
-            crearArchivo(problemas, facultad );
+            //console.log(problemas);
+           if(problemas.length>0){
+                crearArchivo(problemas, facultad );
+           }
+           else{
+               res.status(400).json({message:"No hay problemas para crear notificaciones"});
+           }   
+           
          
         }
 
@@ -68,18 +76,13 @@ notificacionCtrl.get=async(req,res)=>{
                       .pipe(csv_parse())
                       .on('data',(row)=>{
                           transactions.push(row);
-                         
                       }).on('end',async()=>{
-                           apriori= await new Apriori.Algorithm(0.8,0.9);
+                          console.log(transactions);
+                           apriori= await new Apriori.Algorithm(0.15,0.6);
                            result=  await apriori.analyze(transactions);
-                         
+                           console.log(result);
                           readStream.destroy();
-                          
-                    
-                        
-                    
                       }).on('close',async()=>{
-               
                           await unlinkasync(carpeta+nombreArchivo);
                           res.status(200).json(result.associationRules);
                       });
@@ -93,20 +96,20 @@ notificacionCtrl.get=async(req,res)=>{
             problemas.forEach(problema => {
         
                 var rowCSV={
-                    facultad:'',
+                   // facultad:'',
                     area:'',
                     tipo_problema: '',
-                    personalizada: '',
+                   // personalizada: '',
                 }
         
-                rowCSV.facultad= problema.etiquetas.facultad.nombre;
+              //  rowCSV.facultad= problema.etiquetas.facultad.nombre;
                 rowCSV.area= problema.etiquetas.area.nombre;
                 rowCSV.tipo_problema= problema.etiquetas.tipo_problema.nombre;
-                rowCSV.personalizada= problema.etiquetas.personalizada
+               // rowCSV.personalizada= problema.etiquetas.personalizada
                 dataCSV.push(rowCSV);
             });
         
-           
+          
            
             const ws = fs.createWriteStream(carpeta+nombreArchivoCsv);  
             fastcsv.write(dataCSV, { headers: false }).pipe(ws).on('finish',()=>{

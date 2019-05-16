@@ -96,13 +96,6 @@ export class ProblemasComponent implements OnInit {
       
   }
 
-  // applyFilter(filterValue: string) {
-  //   this.dataSource.filter = filterValue;
-
-  //   if (this.dataSource.paginator) {
-  //     this.dataSource.paginator.firstPage();
-  //   }
-  // }
 
   iniciarTabla(){
     this.dataSource= new MatTableDataSource(this.problemas);

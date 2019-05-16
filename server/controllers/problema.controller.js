@@ -5,9 +5,14 @@ const Facultad=require('../models/facultad');
 const fs=require('fs');
 const util= require('util');
 const unlinkasync= util.promisify(fs.unlink);
-
+const mongoose= require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
+const hoy=new Date().toLocaleDateString();
 problemaCtrl.createProblema=async(req,res)=>{
     try {
+       
+       console.log(new Date(hoy));
+    
         const problema=req.body;
      
         const problema2= new Problema({
@@ -16,7 +21,7 @@ problemaCtrl.createProblema=async(req,res)=>{
             usuario:problema.usuario,
             imagen:problema.imagen,
             anonimo: problema.anonimo,
-            fecha: new Date().toDateString(),
+            fecha:  new Date(hoy),
             status:'Pendiente',
             etiquetas:{
                 facultad: problema.etiquetas.facultad,
@@ -32,7 +37,7 @@ problemaCtrl.createProblema=async(req,res)=>{
          await problema2.save();
          res.status(200).json({message:"Problema reportado con exito!"});
     } catch (err) {
-        console.log(err);
+        
         res.status(400).json({error:"Algo salió mal al reportar el problema :(", err:err})
     }
 }
@@ -50,6 +55,7 @@ problemaCtrl.editarProblema=async(req,res)=>{
 
 problemaCtrl.getProblemas=async(req,res)=>{
     try {
+      
         const usuario= req.query.user;
         const status=req.query.status;
         const mine=req.query.mine;
@@ -119,7 +125,7 @@ problemaCtrl.getProblemas=async(req,res)=>{
             problemas= await Problema.find({_id: {$nin:idP},'votos.usuario':user._id}).populate('etiquetas.facultad','nombre').populate('etiquetas.tipo_problema','nombre')
             .populate('etiquetas.area','nombre').sort({'votos.fecha':-1}).limit(3);
         }
-        console.log(problemas);
+      
         res.status(200).json(problemas);
         
     } catch (err) {
@@ -150,14 +156,20 @@ problemaCtrl.etiquetasPersonalizadas=async(req,res)=>{
         const {area}=req.params;
         const {tipoproblema}=req.params;
         
+        console.log(facultad);
+        console.log(area);
+        console.log(tipoproblema);
         
         var array=[];
+        const problemas= await Problema.find();
+        //console.log(problemas)
         const etiquetasPersonalizadas= await Problema.find({'etiquetas.facultad':facultad,'etiquetas.area':area,'etiquetas.tipo_problema':tipoproblema}).select({'etiquetas.personalizada':1,'_id':0});
+        //console.log(etiquetasPersonalizadas);
         etiquetasPersonalizadas.map((etiqueta)=>{
             //coloconado las etiquetas en array
             array.push(etiqueta.etiquetas.personalizada)
         });
-      
+        //console.log(array);
         //Eliminar elementos repetidos en array
         var etiquetas=[];
         array.filter(function(elem, index, self) {
@@ -173,10 +185,10 @@ problemaCtrl.etiquetasPersonalizadas=async(req,res)=>{
                  etiquetas.push(a);
             }
            
-            //return index === self.indexOf(elem);
+          
         });
-    
-        etiquetas.sort((a,b)=>a.contador.localCompare(b.contador));
+       
+        etiquetas.sort((a,b)=>a.contador-b.contador);
         console.log(etiquetas)
         res.json(etiquetas);
     }catch(err){
@@ -193,7 +205,7 @@ problemaCtrl.votarProblema=async(req,res)=>{
         function votar(){
             problema.votos.push({
                 usuario: _idUser,
-                fecha: new Date().toDateString()
+                fecha:  new Date(hoy)
             });
             res.status(200).json({message:"Has votado el problema"});
         }
@@ -262,7 +274,7 @@ problemaCtrl.solucionar=async(req,res)=>{
         const problema= await Problema.findById(req.body._id);
         problema.solucion.nota=req.body.solucion.nota;
         problema.solucion.monto=req.body.solucion.monto;
-        problema.solucion.fecha=req.body.solucion.fecha;
+        problema.solucion.fecha= new Date(req.body.solucion.fecha);
         problema.status="Solucionado";
         problema.save();
         res.status(200).json({message:"Problema solucionado"});
@@ -272,4 +284,162 @@ problemaCtrl.solucionar=async(req,res)=>{
     }
 }
 
+problemaCtrl.estadisticas= async (req,res)=>{
+    try {
+        
+        const {facultad}= req.params;
+        const {fecha_desde}=req.params;
+        const {fecha_hasta}= req.params;
+        const facultad2= await Facultad.findOne({nombre:facultad});
+        const _id= ObjectId(facultad2._id);
+ 
+
+        var match={
+            "etiquetas.facultad": _id,
+               fecha: {gte: new Date(fecha_desde)},
+              fecha:{$lte: new Date(fecha_hasta)}      
+      };
+
+        const estadisticas_status= await Problema.aggregate([
+            {
+                $match: match
+            },
+            {
+                $group:{
+                    _id:"$status",
+                    suma:{$sum:1}
+                }
+            }
+        ]);
+
+        const estadisticas_tipo_problema= await Problema.aggregate([
+            {
+                $lookup: {
+                    from: "tipoproblemas",
+                    localField: "etiquetas.tipo_problema",
+                    foreignField: "_id",
+                    as: "tipo_problemas_doc"
+                }
+            },
+            {$unwind:"$tipo_problemas_doc"},
+         
+            { 
+                $match: match
+        },{
+            $group:{
+                _id:"$tipo_problemas_doc.nombre",
+                suma: {$sum:1}
+                
+            },
+        
+        }
+        ]);
+        
+        const estadisticas_personalizada= await Problema.aggregate([ 
+            { 
+                $match: match
+        },{
+            $group:{
+                _id:"$etiquetas.personalizada",
+                suma: {$sum:1}
+                
+            },
+        
+        }
+        ]);
+
+        const estadisticas_area= await Problema.aggregate([
+            {
+                $lookup: {
+                    from: "areas",
+                    localField: "etiquetas.area",
+                    foreignField: "_id",
+                    as: "area_doc"
+                }
+            },
+            {$unwind:"$area_doc"},
+         
+            { 
+                $match: match
+        },{
+            $group:{
+                _id:"$area_doc.nombre",
+                suma: {$sum:1}
+                
+            },
+        
+        }
+        ]);
+
+        const estadisticas_anonimo= await Problema.aggregate([
+            {
+                $match: match
+            },
+            {
+                $group:{
+                    _id:"$anonimo",
+                    suma: {$sum:1}
+                }
+            }
+        ]);
+
+        const estadisticas_solucion= await Problema.aggregate([
+            {
+                $match: {
+
+                    "etiquetas.facultad": _id,
+                    "solucion.fecha":{$gte:fecha_desde},
+                    "solucion.fecha":{$lte: fecha_hasta}  
+                 }
+                   
+                
+            },
+            {
+                $group:{
+                    _id:"$status",
+                    suma: {$sum:1},
+                    monto: {$sum:"$monto"}
+                }
+            }
+        ]);
+
+        var estadisticas=[];
+        var estadistica1={};
+        var estadistica2={};
+        var estadistica3={};
+        var estadistica4={};
+        var estadistica5={};
+        var estadistica6={};
+
+        estadistica1["nombre"]='Status';
+        estadistica1["estadisticas"]=estadisticas_status;
+
+        estadistica2["nombre"]='Anonimo';
+        estadistica2["estadisticas"]=estadisticas_anonimo;
+
+        estadistica3["nombre"]='Tipo problema';
+        estadistica3["estadisticas"]=estadisticas_tipo_problema;
+
+        estadistica4["nombre"]='Area';
+        estadistica4["estadisticas"]=estadisticas_area;
+
+        estadistica5["nombre"]='Etiqueta personalizada';
+        estadistica5["estadisticas"]=estadisticas_personalizada;
+
+        estadistica6["nombre"]='Solucionados';
+        estadistica6["estadisticas"]=estadisticas_solucion;
+
+        estadisticas.push(estadistica1);
+        estadisticas.push(estadistica2);
+        estadisticas.push(estadistica3);
+        estadisticas.push(estadistica4);
+        estadisticas.push(estadistica5); 
+        estadisticas.push(estadistica6);  
+
+        res.status(200).json(estadisticas);
+
+    } catch (error) {
+        res.status(400).json({error:"Hubo problemas al recuperar las estadisticas",err:error});
+    }
+}
 module.exports=problemaCtrl;

@@ -30,9 +30,6 @@ export class MainNavComponent {
     if(localStorage.getItem("notificaciones")!=null){
       this.notificaciones=JSON.parse(localStorage.getItem("notificaciones"));
     }
-  
-
-
    
   } 
 
@@ -48,10 +45,9 @@ export class MainNavComponent {
     setInterval(()=>{
       localStorage.removeItem("notificaciones");
       this.notificacion.getNotificaciones(this.user.facultad).subscribe((res)=>{
-       
         localStorage.setItem("notificaciones",JSON.stringify(res));
         this.notificaciones=JSON.parse(localStorage.getItem("notificaciones"));
-  
+        console.log(res);
       },(error)=>{
         console.error(error);
       },()=>{

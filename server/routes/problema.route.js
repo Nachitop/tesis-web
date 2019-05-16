@@ -40,5 +40,6 @@ router.get('/:_id',problema.getProblema);
 router.delete('/:_id',problema.deleteProblema);
 router.put('/:_id',problema.editarProblema);
 router.post('/solucionar',problema.solucionar);
+router.get('/estadisticas/:facultad/:fecha_desde/:fecha_hasta',problema.estadisticas);
 
 module.exports=router;

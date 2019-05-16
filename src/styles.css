@@ -24,3 +24,13 @@ body{
 .margin-all{
     margin: 25px 25px 25px 25px;
 }
+
+.boton-size{
+    height: 100px;
+    width: 250px;
+    font-size: 1.5em;
+}
+
+.full-width{
+    width: 100%;
+}

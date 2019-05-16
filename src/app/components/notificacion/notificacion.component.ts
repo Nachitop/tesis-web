@@ -14,7 +14,7 @@ export class NotificacionComponent implements OnInit {
 
   constructor(public router:Router) { 
     this.notificaciones= JSON.parse(localStorage.getItem("notificaciones"));
-    console.log(this.notificaciones);
+    
 
   
   }

@@ -1,0 +1,55 @@
+<div class="container-fluid" style="margin: 8px 8px 8px 8px;">
+
+ 
+
+
+      <div class="row align-self-center w-100" style="margin-top:10%;">
+          <div class="col-md-6 col-xs-12 col-sm-12 mx-auto">
+              <div class="row justify-content-center align-items-center">
+                <form [formGroup]="formFecha" class="full-width">
+                  <mat-form-field class="full-width"  >
+                      <input matInput [matDatepicker]="picker1" placeholder="Seleccione una fecha" [formControl]="controlFecha1" >
+                      <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                      <mat-datepicker #picker1></mat-datepicker>
+                      <mat-error *ngIf="controlFecha1.hasError('required')"><strong>Fecha</strong> es requerido</mat-error>
+                   </mat-form-field>
+                   <br>
+                   <br>
+                   <mat-form-field class="full-width"  >
+                      <input matInput [matDatepicker]="picker2" placeholder="Seleccione una fecha" [formControl]="controlFecha2" >
+                      <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                      <mat-datepicker #picker2></mat-datepicker>
+                      <mat-error *ngIf="controlFecha2.hasError('required')"><strong>Fecha</strong> es requerido</mat-error>
+                   </mat-form-field>
+                   <br>
+                   <br>
+                   <div style="text-align:center;">
+                      <button mat-raised-button  color="primary" (click)="obtenerEstadisticas();" class="boton-size">Obtener estadísticas</button>
+                   </div>
+                  
+                   </form>
+                
+                 
+
+                    <div class="row" >
+                        <br>
+                        <br>
+                        <br>
+                        <br>
+                        <div style="margin: 20px 20px 20px 20px; width: 350px; height: 330px;" *ngFor="let estadistica of estadisticas">
+                          <canvas  [id]="estadistica.nombre" ></canvas>
+                        </div>
+                    </div>
+
+
+              </div>
+          </div>
+      </div>
+
+     
+    
+
+</div>
+
+
+

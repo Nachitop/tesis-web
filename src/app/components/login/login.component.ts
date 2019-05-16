@@ -38,7 +38,6 @@ export class LoginComponent implements OnInit {
     console.log(this.loginForm.controls['matricula'].value);
     this.usuario.matricula=this.loginForm.controls['matricula'].value;
     this.usuario.password=this.loginForm.controls['password'].value;
-    console.log(this.usuario);
     this.usuarioService.login(this.usuario).subscribe((res)=>{
       this.usuario=res as Usuario;
       if(this.usuario.tipo==="Director"){

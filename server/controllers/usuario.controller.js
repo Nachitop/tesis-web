@@ -1,6 +1,6 @@
 const usuarioCtrl={};
 const Usuario=require('../models/usuario');
-const bcrypt=require('bcrypt');
+//const bcrypt=require('bcrypt');
 const Carrera=require('../models/carrera');
 
 usuarioCtrl.createUsuario=async(req,res)=>{
@@ -18,7 +18,8 @@ usuarioCtrl.createUsuario=async(req,res)=>{
             tipo: usuario.tipo,
             status: 'Activo',
             fecha_registro: new Date(),
-            password:  bcrypt.hashSync(usuario.password,10)
+            password: usuario.password
+           // password:  bcrypt.hashSync(usuario.password,10)
     
         });
         await usuario2.save();
@@ -48,7 +49,42 @@ async function buscarUsuario(usuario){
         return user;
 }
 
-usuarioCtrl.login=async(req,res)=>{
+// usuarioCtrl.login=async(req,res)=>{
+   
+//     try {
+//         const usuario=req.body.matricula;
+//         const password=req.body.password;
+     
+//          buscarUsuario(usuario).then((usuario)=>{
+//            const user=usuario;
+//             if(user){
+//                if(user.status=='Activo'){
+//                  bcrypt.compare(password,user.password, function(err,result){
+//                      if(result==true){   
+//                          res.status(200).json(user);
+//                      }else{
+                       
+//                          res.status(400).json({error:'Contraseña incorrecta'});
+//                      }
+     
+//                  });
+//                 }else{
+//                     res.status(400).json({error:'Tu cuenta no está activada, en proceso de activación o puede asistir a la administración de su facultad'});
+//                 }
+//             }else{
+//                 res.status(400).json({error:'Usuario no encontrado'});
+//             }
+
+//          });
+         
+       
+//     } catch (err) {
+//         res.status(400).json({error:'Algo salió mal al iniciar sesión', err:err})
+//     }
+// }
+
+
+ usuarioCtrl.login=async(req,res)=>{
    
     try {
         const usuario=req.body.matricula;
@@ -58,15 +94,13 @@ usuarioCtrl.login=async(req,res)=>{
            const user=usuario;
             if(user){
                if(user.status=='Activo'){
-                 bcrypt.compare(password,user.password, function(err,result){
-                     if(result==true){   
-                         res.status(200).json(user);
-                     }else{
-                       
-                         res.status(400).json({error:'Contraseña incorrecta'});
-                     }
-     
-                 });
+
+                    if(user.password===password){
+                        res.status(200).json(user);
+                    }else{
+                        res.status(400).json({error:'Contraseña incorrecta'});
+                    }
+          
                 }else{
                     res.status(400).json({error:'Tu cuenta no está activada, en proceso de activación o puede asistir a la administración de su facultad'});
                 }
@@ -80,7 +114,10 @@ usuarioCtrl.login=async(req,res)=>{
     } catch (err) {
         res.status(400).json({error:'Algo salió mal al iniciar sesión', err:err})
     }
-}
+ }
+
+
+
 
 usuarioCtrl.getUsuario=async(req,res)=>{
     try{

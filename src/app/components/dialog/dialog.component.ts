@@ -114,7 +114,9 @@ export class DialogComponent implements OnInit {
       problema._id=this.problema._id;
       problema.solucion.nota= this.formSolucion.get('nota').value;
       problema.solucion.monto=this.formSolucion.get('monto').value;
-      problema.solucion.fecha=this.formSolucion.get('fecha').value;
+      var fecha_solucionada= this.formSolucion.get('fecha').value;
+      problema.solucion.fecha= fecha_solucionada;
+      console.log(fecha_solucionada);
       this.problemaService.solucionarProblema(problema).subscribe((res:string)=>{
 
       },error=>{},()=> this.dialogRef.close(accion));

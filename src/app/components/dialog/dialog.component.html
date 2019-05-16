@@ -1,6 +1,6 @@
 
     <h4 mat-dialog-title><strong> {{data.title}}</strong></h4>
-    
+
         <mat-dialog-content>
           <p *ngIf="data.content; else problemaConte;">{{data.content}}</p>
           <ng-template #problemaConte>
