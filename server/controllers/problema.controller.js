@@ -7,14 +7,17 @@ const util= require('util');
 const unlinkasync= util.promisify(fs.unlink);
 const mongoose= require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
-const hoy=new Date().toLocaleDateString();
+const hoy=new Date().toLocaleDateString().replace(/\//g,"-");
+
+
+
 problemaCtrl.createProblema=async(req,res)=>{
     try {
        
        console.log(new Date(hoy));
-    
+       
         const problema=req.body;
-     
+        console.log(problema.imagen);
         const problema2= new Problema({
             titulo: problema.titulo,
             descripcion: problema.descripcion,
@@ -138,6 +141,7 @@ problemaCtrl.getProblemas=async(req,res)=>{
 problemaCtrl.subirFoto= async(req,res)=>{
     try {
         const file = await req.file;
+        console.log(file);
         if(file){
             res.status(200).json(file.path);
         }
@@ -156,20 +160,18 @@ problemaCtrl.etiquetasPersonalizadas=async(req,res)=>{
         const {area}=req.params;
         const {tipoproblema}=req.params;
         
-        console.log(facultad);
-        console.log(area);
-        console.log(tipoproblema);
+      
         
         var array=[];
         const problemas= await Problema.find();
-        //console.log(problemas)
+    
         const etiquetasPersonalizadas= await Problema.find({'etiquetas.facultad':facultad,'etiquetas.area':area,'etiquetas.tipo_problema':tipoproblema}).select({'etiquetas.personalizada':1,'_id':0});
-        //console.log(etiquetasPersonalizadas);
+   
         etiquetasPersonalizadas.map((etiqueta)=>{
             //coloconado las etiquetas en array
             array.push(etiqueta.etiquetas.personalizada)
         });
-        //console.log(array);
+       
         //Eliminar elementos repetidos en array
         var etiquetas=[];
         array.filter(function(elem, index, self) {
@@ -189,7 +191,7 @@ problemaCtrl.etiquetasPersonalizadas=async(req,res)=>{
         });
        
         etiquetas.sort((a,b)=>a.contador-b.contador);
-        console.log(etiquetas)
+      
         res.json(etiquetas);
     }catch(err){
         res.status(400).json({error:"Hubo problemas al recuperar las etiquetas :(", err:err})
@@ -256,6 +258,9 @@ problemaCtrl.getProblema=async(req,res)=>{
         res.status(400).json({error:"Hubo problemas al recuperar el problema", err:error})
     }
 }
+
+
+
 
 problemaCtrl.deleteProblema= async(req,res)=>{
     try {

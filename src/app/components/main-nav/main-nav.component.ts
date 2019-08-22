@@ -6,6 +6,7 @@ import { Usuario } from 'src/app/models/Usuario';
 import { NotificacionService } from 'src/app/services/notificacion.service';
 import { Notificacion } from 'src/app/models/Notificacion';
 import {Router} from '@angular/router';
+import {formatDate} from '@angular/common';
 
 @Component({
   selector: 'app-main-nav',
@@ -15,6 +16,7 @@ import {Router} from '@angular/router';
 export class MainNavComponent {
   user:Usuario;
   notificaciones:Notificacion[]=[];
+
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
       map(result => result.matches)
@@ -43,17 +45,25 @@ export class MainNavComponent {
 
   obtenerNotificaciones(){
     setInterval(()=>{
-      localStorage.removeItem("notificaciones");
-      this.notificacion.getNotificaciones(this.user.facultad).subscribe((res)=>{
+      //localStorage.removeItem("notificaciones");
+    
+      this.notificacion.getNotificacionStatus(this.user._id, formatDate(new Date(),'yyyy-MM-dd','en')).subscribe((res)=>{
+        
+        this.notificacion.getNotificaciones(this.user.facultad).subscribe((res)=>{
         localStorage.setItem("notificaciones",JSON.stringify(res));
         this.notificaciones=JSON.parse(localStorage.getItem("notificaciones"));
-        console.log(res);
+     
       },(error)=>{
-        console.error(error);
+     
       },()=>{
 
       });
-    },10000);
+        
+      },error=>{
+        localStorage.removeItem("notificaciones");
+      });
+    
+    },500000);
   }
 
 

@@ -12,4 +12,13 @@ export class NotificacionService {
   getNotificaciones(facultad:String){
     return this.http.get(this.conexion.getServer()+this.url_api+"/"+facultad);
   }
+
+  createNotificacionStatus(notificacion:any){
+
+    return this.http.post(this.conexion.getServer()+this.url_api, notificacion);
+  }
+
+  getNotificacionStatus(usuario:string, fecha:string){
+    return this.http.get(this.conexion.getServer()+this.url_api+"/status/"+usuario+"/"+fecha);
+  }
 }

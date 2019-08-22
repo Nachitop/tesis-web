@@ -15,7 +15,7 @@ coleccionCtrl.createUsuario=async(req,res)=>{
         await coleccion.save();
         res.json("guardado");
     }catch(err){
-        console.log(err)
+        res.status(400).json({error:'Algo anda mal al crear colección de usuario!',err:err});
     }
 }
 
@@ -29,7 +29,7 @@ coleccionCtrl.getUsuario=async(req,res)=>{
             res.json(0);
         }
     }catch(err){
-        console.log(err);
+        res.status(400).json({error:'Algo anda mal al obtener al usuario de la colección',err:err});
     }
 }
 module.exports=coleccionCtrl;

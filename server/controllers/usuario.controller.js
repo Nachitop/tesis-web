@@ -6,9 +6,9 @@ const Carrera=require('../models/carrera');
 usuarioCtrl.createUsuario=async(req,res)=>{
     try{
         const usuario=req.body;
-        console.log(usuario)
+     
         const carrera= await Carrera.findOne({nombre:usuario.carrera.nombre}).populate({path:'facultad',match:{nombre:usuario.carrera.facultad.nombre}});
-        console.log(carrera);
+      
         const usuario2= new Usuario({
             matricula: usuario.matricula,
             email: usuario.email,

@@ -35,7 +35,7 @@ export class LoginComponent implements OnInit {
   }
 
   ingresar(){
-    console.log(this.loginForm.controls['matricula'].value);
+  
     this.usuario.matricula=this.loginForm.controls['matricula'].value;
     this.usuario.password=this.loginForm.controls['password'].value;
     this.usuarioService.login(this.usuario).subscribe((res)=>{
@@ -56,7 +56,7 @@ export class LoginComponent implements OnInit {
       
       
     },error=>{
-      console.log(error);
+
       this.dialog.open(DialogComponent,{
         width:'250px',
         height:'250px',

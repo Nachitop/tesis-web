@@ -3,7 +3,7 @@ const APF=require("../models/AreaPorFacultad");
 
 APFCtrl.create=async(req,res)=>{
     try {
-        console.log(req.body);
+      
 
         const apf= new APF({
             facultad: req.body.facultad,

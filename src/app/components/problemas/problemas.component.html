@@ -41,6 +41,7 @@
               <ng-container matColumnDef="imagen">
                 <th mat-header-cell *matHeaderCellDef> Imagen </th>
                 <td mat-cell *matCellDef="let row"> <img style="width:100px; height:100px; margin: 8px 8px 8px 8px;" [src]="conexion.getServer()+'/'+row.imagen"> </td>
+              
               </ng-container>
           
               <!-- Progress Column -->

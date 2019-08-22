@@ -8,14 +8,14 @@ var Apriori = require('apriori');
 var carpeta="csvFiles/"; 
 const util= require('util');
 const unlinkasync= util.promisify(fs.unlink);
-const hoy=new Date().toLocaleDateString();
+const hoy=new Date().toLocaleDateString().replace(/\//g,"-");
 
 notificacionCtrl.get=async(req,res)=>{
     try {
 
         const {facultad}= req.params;
 
-        //const fechaHoy=new Date().toDateString();
+     
  
         var problemas=[];
         const options={};
@@ -48,7 +48,7 @@ notificacionCtrl.get=async(req,res)=>{
              correrAlgoritmo(problemas,facultad);
 
         }else{
-            //console.log(new Date(hoy));
+          
             const fac= await Facultad.findOne({nombre:facultad});
             problemas = await Problema.find({'etiquetas.facultad':fac._id, fecha: new Date(hoy), status:{$ne:'Solucionado'} },options).populate(population['population1']).populate(population['population2']).populate(population['population3']);
             correrAlgoritmo(problemas,fac.nombre);
@@ -56,9 +56,9 @@ notificacionCtrl.get=async(req,res)=>{
 
 
         function correrAlgoritmo(problemas,facultad){
-            //console.log(problemas);
+         
            if(problemas.length>0){
-                crearArchivo(problemas, facultad );
+                crearArchivo(problemas);
            }
            else{
                res.status(400).json({message:"No hay problemas para crear notificaciones"});
@@ -67,55 +67,31 @@ notificacionCtrl.get=async(req,res)=>{
          
         }
 
-        function leerArchivo(nombreArchivo){
-                  //Se lee el archivo de manera asyncrona
-                  var result;
-                  var apriori;
-                  var transactions=[];
-               var readStream= fs.createReadStream(carpeta+nombreArchivo)
-                      .pipe(csv_parse())
-                      .on('data',(row)=>{
-                          transactions.push(row);
-                      }).on('end',async()=>{
-                          console.log(transactions);
-                           apriori= await new Apriori.Algorithm(0.15,0.6);
-                           result=  await apriori.analyze(transactions);
-                           console.log(result);
-                          readStream.destroy();
-                      }).on('close',async()=>{
-                          await unlinkasync(carpeta+nombreArchivo);
-                          res.status(200).json(result.associationRules);
-                      });
+        function leerArchivo(transactions){
+               
+                var result;
+                var apriori;
+             
+                apriori=  new Apriori.Algorithm(0.15,0.6);
+                result= apriori.analyze(transactions);
+                res.status(200).json(result.associationRules);
+            
         }
 
-         function crearArchivo(problemas,nombreArchivo){
+         function crearArchivo(problemas){
             try {
-                var nombreArchivoCsv=nombreArchivo+".csv";
-                var dataCSV=[];
-        
-            problemas.forEach(problema => {
-        
-                var rowCSV={
-                   // facultad:'',
-                    area:'',
-                    tipo_problema: '',
-                   // personalizada: '',
-                }
-        
-              //  rowCSV.facultad= problema.etiquetas.facultad.nombre;
-                rowCSV.area= problema.etiquetas.area.nombre;
-                rowCSV.tipo_problema= problema.etiquetas.tipo_problema.nombre;
-               // rowCSV.personalizada= problema.etiquetas.personalizada
-                dataCSV.push(rowCSV);
-            });
-        
+            var transactions=[];
           
-           
-            const ws = fs.createWriteStream(carpeta+nombreArchivoCsv);  
-            fastcsv.write(dataCSV, { headers: false }).pipe(ws).on('finish',()=>{
-                leerArchivo(nombreArchivoCsv);
+            problemas.forEach(problema => {
+                var row=[];
+                row.push(problema.etiquetas.area.nombre); 
+                row.push(problema.etiquetas.tipo_problema.nombre);
+          
+                transactions.push(row);
+            });
+            leerArchivo(transactions);
                
-             });
+        
         
             } catch (error) {
                 return error;
@@ -126,6 +102,48 @@ notificacionCtrl.get=async(req,res)=>{
         res.status(400).json({message:'Hubo problemas al recuperar las notificaciones', error:error})
     }
 
+}
+
+
+
+//apis para conocer cuando mostrar las notificaciones en el administrador (vistos de notificaciones)
+
+const Notificacion= require('../models/notificacion');
+
+notificacionCtrl.create=async(req,res)=>{
+    try {
+        
+        const notificacion= new Notificacion({
+            usuario: req.body.usuario,
+            status: 'visto',
+            fecha: req.body.fecha
+        });
+
+        await notificacion.save();
+        res.status(200).json({message:'Notificación status creada'});
+
+    } catch (error) {
+        res.status(400).json({message:'hubo problemas al modificar el status de las notificaciones', error:error});
+    }
+}
+
+notificacionCtrl.getNotificacion=async(req,res)=>{
+    try {
+
+
+     
+        var notificaciones=[];
+         notificaciones= await Notificacion.find({usuario:req.params.usuario,fecha: req.params.fecha});
+ 
+        if(notificaciones.length>0){
+            res.status(400).json({message:"Notificaciones ya vistas"});
+        }else{
+            res.status(200).json({message:"Notificaciones no vistas"});
+        }
+        
+    } catch (error) {
+        res.status(400).json({message:'hubo problemas al obtener la última notificación', error:error});
+    }
 }
 
 

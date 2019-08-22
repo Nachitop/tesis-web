@@ -60,12 +60,12 @@ export class ProblemasComponent implements OnInit {
    
     this.problemaService.getProblemas(this.filtro).subscribe((res)=>{
       this.problemas=res as Problema[];
-      console.log(this.problemas);
+    
       this.iniciarTabla();
     
       this.resetearFiltro();
 
-    },error=>{console.error(error); this.resetearFiltro();this.mostrarSpinner=false;},()=>this.mostrarSpinner=false);
+    },error=>{this.resetearFiltro();this.mostrarSpinner=false;},()=>this.mostrarSpinner=false);
   }
 
   verProblema(_id:string){

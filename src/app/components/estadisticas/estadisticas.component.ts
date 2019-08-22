@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl,Validators, FormGroup } from '@angular/forms';
 import { Usuario } from 'src/app/models/Usuario';
 import { ProblemaService } from 'src/app/services/problema.service';
+
 declare var Chart:any;
 @Component({
   selector: 'app-estadisticas',
@@ -38,11 +39,12 @@ export class EstadisticasComponent implements OnInit {
   obtenerEstadisticas(){
     var fecha_desde:Date= this.formFecha.get('fecha1').value;
     var fecha_hasta:Date= this.formFecha.get('fecha2').value;
+    
     this.problemaService.getEstadisticas(this.usuario.facultad, fecha_desde.toString() ,fecha_hasta.toString()).subscribe((res)=>{
         this.estadisticas = JSON.parse(JSON.stringify(res));
       
     },(error)=>{
-      console.log(error)
+   
     }, ()=>{
       setTimeout(()=>{
         this.crearGraficos();
@@ -52,7 +54,7 @@ export class EstadisticasComponent implements OnInit {
   }
 
   crearGraficos(){
-    console.log(this.estadisticas.length);
+ 
 
 for(let i=0; i<=this.estadisticas.length-2;i++){
   var obj= this.estadisticas[i];

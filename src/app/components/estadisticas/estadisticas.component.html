@@ -8,7 +8,7 @@
               <div class="row justify-content-center align-items-center">
                 <form [formGroup]="formFecha" class="full-width">
                   <mat-form-field class="full-width"  >
-                      <input matInput [matDatepicker]="picker1" placeholder="Seleccione una fecha" [formControl]="controlFecha1" >
+                      <input matInput [matDatepicker]="picker1" placeholder="Desde" [formControl]="controlFecha1" >
                       <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
                       <mat-datepicker #picker1></mat-datepicker>
                       <mat-error *ngIf="controlFecha1.hasError('required')"><strong>Fecha</strong> es requerido</mat-error>
@@ -16,7 +16,7 @@
                    <br>
                    <br>
                    <mat-form-field class="full-width"  >
-                      <input matInput [matDatepicker]="picker2" placeholder="Seleccione una fecha" [formControl]="controlFecha2" >
+                      <input matInput [matDatepicker]="picker2" placeholder="Hasta" [formControl]="controlFecha2" >
                       <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
                       <mat-datepicker #picker2></mat-datepicker>
                       <mat-error *ngIf="controlFecha2.hasError('required')"><strong>Fecha</strong> es requerido</mat-error>

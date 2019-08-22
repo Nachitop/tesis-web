@@ -2,9 +2,10 @@
     <div class="row align-self-center w-100" style="margin-top:10%;">
         <div class="col-md-6 col-xs-12 col-sm-12 mx-auto">
             <div class="row justify-content-center align-items-center">
-                <mat-card  *ngFor="let notificacion of notificaciones" style="margin-top:10px; margin-bottom:10px;" class="full-width">{{notificacion.lhs}} {{notificacion.rhs}}, nivel de confianza: {{notificacion.confidence}} </mat-card>
-     
-                <button mat-raised-button color="primary" (click)="aceptar();" style="text-align:center; margin-top: 25px;" class="full-width">Aceptar</button>
+                <mat-card  *ngFor="let notificacion of notificaciones" style="margin-top:10px; margin-bottom:10px;" class="full-width">En el área de <strong>{{notificacion.lhs}}</strong> hay problemas de <strong>{{notificacion.rhs}}</strong> que son prioritarios de atender.</mat-card>
+                <br>
+                <br>
+                <button *ngIf="notificaciones.length>0" mat-raised-button color="primary" (click)="aceptar();" style="text-align:center; margin-top: 25px;" class="full-width">Aceptar</button>
             </div>
           </div>
     </div>
